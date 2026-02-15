@@ -1,61 +1,55 @@
 package com.project.back_end.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 
 import java.util.List;
 
 @Entity
+@Table(name = "doctors")
 public class Doctor {
 
-    // Primary key
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Doctor name
-    @NotNull(message = "Name is required")
+    @NotNull(message = "Doctor name is required")
     @Size(min = 3, max = 100, message = "Name must be between 3 and 100 characters")
+    @Column(nullable = false)
     private String name;
 
-    // Medical specialty
     @NotNull(message = "Specialty is required")
     @Size(min = 3, max = 50, message = "Specialty must be between 3 and 50 characters")
+    @Column(nullable = false)
     private String specialty;
 
-    // Email address
     @NotNull(message = "Email is required")
     @Email(message = "Email should be valid")
+    @Column(nullable = false, unique = true)
     private String email;
 
-    // Password (hidden in API responses)
     @NotNull(message = "Password is required")
     @Size(min = 6, message = "Password must be at least 6 characters long")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Column(nullable = false)
     private String password;
 
-    // Phone number (exactly 10 digits)
     @NotNull(message = "Phone number is required")
     @Pattern(regexp = "^[0-9]{10}$", message = "Phone number must be exactly 10 digits")
+    @Column(nullable = false, unique = true)
     private String phone;
 
-    // Available time slots
     @ElementCollection
+    @CollectionTable(name = "doctor_available_times", joinColumns = @JoinColumn(name = "doctor_id"))
+    @Column(name = "time_slot")
     private List<String> availableTimes;
 
-    // No-argument constructor (required by JPA)
+    // Default constructor required by JPA
     public Doctor() {
     }
 
-    // Optional parameterized constructor
+    // Parameterized constructor for convenience
     public Doctor(String name, String specialty, String email, String password, String phone, List<String> availableTimes) {
         this.name = name;
         this.specialty = specialty;
@@ -66,8 +60,13 @@ public class Doctor {
     }
 
     // Getters and Setters
+
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -76,10 +75,6 @@ public class Doctor {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getSpecialty() {
@@ -102,7 +97,6 @@ public class Doctor {
         return password;
     }
 
-    // You may omit getPassword() if you want stronger security
     public void setPassword(String password) {
         this.password = password;
     }
@@ -123,3 +117,5 @@ public class Doctor {
         this.availableTimes = availableTimes;
     }
 }
+
+

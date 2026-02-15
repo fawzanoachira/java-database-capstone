@@ -1,11 +1,6 @@
 package com.project.back_end.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Transient;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 
@@ -14,36 +9,37 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Entity
+@Table(name = "appointments")
 public class Appointment {
 
-    // Primary key for Appointment entity
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Doctor associated with the appointment
-    @ManyToOne
-    @NotNull(message = "Doctor must be provided")
+    @NotNull(message = "Doctor must be assigned")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "doctor_id", nullable = false)
     private Doctor doctor;
 
-    // Patient associated with the appointment
-    @ManyToOne
-    @NotNull(message = "Patient must be provided")
+    @NotNull(message = "Patient must be assigned")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
 
-    // Date and time of the appointment
+    @NotNull(message = "Appointment time must be provided")
     @Future(message = "Appointment time must be in the future")
+    @Column(name = "appointment_time", nullable = false)
     private LocalDateTime appointmentTime;
 
-    // 0 = Scheduled, 1 = Completed
-    @NotNull(message = "Appointment status must be provided")
-    private Integer status;
+    @NotNull(message = "Status is required")
+    @Column(nullable = false)
+    private Integer status; // 0 = scheduled, 1 = completed
 
-    // No-argument constructor (required by JPA)
+    // Default constructor required by JPA
     public Appointment() {
     }
 
-    // Optional parameterized constructor
+    // Parameterized constructor
     public Appointment(Doctor doctor, Patient patient, LocalDateTime appointmentTime, Integer status) {
         this.doctor = doctor;
         this.patient = patient;
@@ -51,25 +47,24 @@ public class Appointment {
         this.status = status;
     }
 
-    // Transient method to calculate appointment end time
+    // Transient method: end time is not stored in DB
     @Transient
     public LocalDateTime getEndTime() {
         return appointmentTime.plusHours(1);
     }
 
-    // Extracts only the date part of the appointment
     @Transient
     public LocalDate getAppointmentDate() {
         return appointmentTime.toLocalDate();
     }
 
-    // Extracts only the time part of the appointment
     @Transient
     public LocalTime getAppointmentTimeOnly() {
         return appointmentTime.toLocalTime();
     }
 
     // Getters and Setters
+
     public Long getId() {
         return id;
     }
@@ -110,3 +105,5 @@ public class Appointment {
         this.status = status;
     }
 }
+
+

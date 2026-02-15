@@ -1,40 +1,38 @@
 package com.project.back_end.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
 @Entity
+@Table(name = "admins")
 public class Admin {
 
-    // Primary key for Admin entity
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Username used for admin login
     @NotNull(message = "Username cannot be null")
+    @Column(nullable = false, unique = true)
     private String username;
 
-    // Password for authentication (write-only for JSON)
     @NotNull(message = "Password cannot be null")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Column(nullable = false)
     private String password;
 
-    // No-argument constructor (required by JPA)
+    // Default constructor required by JPA
     public Admin() {
     }
 
-    // Optional parameterized constructor
+    // Parameterized constructor for convenience
     public Admin(String username, String password) {
         this.username = username;
         this.password = password;
     }
 
     // Getters and Setters
+
     public Long getId() {
         return id;
     }
@@ -59,3 +57,4 @@ public class Admin {
         this.password = password;
     }
 }
+

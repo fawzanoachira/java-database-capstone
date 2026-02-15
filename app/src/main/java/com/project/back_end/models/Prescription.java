@@ -8,33 +8,27 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "prescriptions")
 public class Prescription {
 
-    // Primary key for the MongoDB document
     @Id
     private String id;
 
-    // Name of the patient
     @NotNull(message = "Patient name is required")
     @Size(min = 3, max = 100, message = "Patient name must be between 3 and 100 characters")
     private String patientName;
 
-    // Associated appointment ID
     @NotNull(message = "Appointment ID is required")
     private Long appointmentId;
 
-    // Medication prescribed
-    @NotNull(message = "Medication is required")
+    @NotNull(message = "Medication name is required")
     @Size(min = 3, max = 100, message = "Medication name must be between 3 and 100 characters")
     private String medication;
 
-    // Dosage information
     @NotNull(message = "Dosage is required")
     private String dosage;
 
-    // Optional notes from the doctor
-    @Size(max = 200, message = "Doctor notes must not exceed 200 characters")
+    @Size(max = 200, message = "Doctor notes must be at most 200 characters")
     private String doctorNotes;
 
-    // No-argument constructor
+    // Default constructor required by Spring Data
     public Prescription() {
     }
 
@@ -48,6 +42,7 @@ public class Prescription {
     }
 
     // Getters and Setters
+
     public String getId() {
         return id;
     }
