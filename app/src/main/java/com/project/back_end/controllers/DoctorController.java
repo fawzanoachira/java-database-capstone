@@ -3,7 +3,7 @@ package com.project.back_end.controllers;
 import com.project.back_end.DTO.Login;
 import com.project.back_end.models.Doctor;
 import com.project.back_end.services.DoctorService;
-import com.project.back_end.services.Service;
+import com.project.back_end.services.ClinicService;
 //import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -21,11 +21,11 @@ import java.util.Map;
 public class DoctorController {
 
     private final DoctorService doctorService;
-    private final Service service;
+    private final ClinicService service;
 
     // 2. Constructor injection
     //@Autowired
-    public DoctorController(DoctorService doctorService, Service service) {
+    public DoctorController(DoctorService doctorService, ClinicService service) {
         this.doctorService = doctorService;
         this.service = service;
     }
