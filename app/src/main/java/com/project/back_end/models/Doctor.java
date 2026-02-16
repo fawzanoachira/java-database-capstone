@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -43,7 +44,7 @@ public class Doctor {
     @ElementCollection
     @CollectionTable(name = "doctor_available_times", joinColumns = @JoinColumn(name = "doctor_id"))
     @Column(name = "time_slot")
-    private List<String> availableTimes;
+    private List<String> availableTimes = new ArrayList<>();
 
     // Default constructor required by JPA
     public Doctor() {
@@ -56,7 +57,7 @@ public class Doctor {
         this.email = email;
         this.password = password;
         this.phone = phone;
-        this.availableTimes = availableTimes;
+        this.availableTimes = availableTimes != null ? new ArrayList<>(availableTimes) : new ArrayList<>();
     }
 
     // Getters and Setters
@@ -114,8 +115,6 @@ public class Doctor {
     }
 
     public void setAvailableTimes(List<String> availableTimes) {
-        this.availableTimes = availableTimes;
+        this.availableTimes = availableTimes != null ? availableTimes : new ArrayList<>();
     }
 }
-
-

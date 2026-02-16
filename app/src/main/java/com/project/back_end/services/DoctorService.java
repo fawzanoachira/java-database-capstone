@@ -6,7 +6,8 @@ import com.project.back_end.repo.AppointmentRepository;
 import com.project.back_end.repo.DoctorRepository;
 import com.project.back_end.services.TokenService;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
@@ -14,15 +15,13 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
-@Service // 1. Mark as a Spring Service
+@Service
 public class DoctorService {
 
     private final DoctorRepository doctorRepository;
     private final AppointmentRepository appointmentRepository;
     private final TokenService tokenService;
 
-    // 2. Constructor Injection
-    //@Autowired
     public DoctorService(DoctorRepository doctorRepository,
                          AppointmentRepository appointmentRepository,
                          TokenService tokenService) {
@@ -39,7 +38,7 @@ public class DoctorService {
         if (optionalDoctor.isEmpty()) return Collections.emptyList();
 
         Doctor doctor = optionalDoctor.get();
-        List<String> allSlots = doctor.getAvailableTimes(); // assume Set<LocalTime>
+        List<String> allSlots = doctor.getAvailableTimes();
 
         List<Appointment> bookedAppointments = appointmentRepository
                 .findByDoctorIdAndAppointmentTimeBetween(
@@ -110,12 +109,24 @@ public class DoctorService {
 
     // 9. Validate doctor credentials
     @Transactional
-    public String validateDoctor(String email, String password) {
+    public ResponseEntity<Map<String, String>> validateDoctor(String email, String password) {
+        Map<String, String> response = new HashMap<>();
+        
         Doctor doctor = doctorRepository.findByEmail(email);
+        
         if (doctor == null || !doctor.getPassword().equals(password)) {
-            return "Invalid email or password";
+            response.put("status", "error");
+            response.put("message", "Invalid email or password");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
-        return tokenService.generateToken(String.valueOf(doctor.getId()));
+        
+        String token = tokenService.generateToken(doctor.getId(), "doctor", doctor.getEmail());
+        
+        response.put("status", "success");
+        response.put("message", "Login successful");
+        response.put("token", token);
+        
+        return ResponseEntity.ok(response);
     }
 
     // 10. Find doctors by name
@@ -175,4 +186,3 @@ public class DoctorService {
         return filterDoctorsByTime(allDoctors, timePeriod);
     }
 }
-
